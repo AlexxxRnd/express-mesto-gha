@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const error_404 = require('./errors/error_404');
 
 const { PORT = 3000 } = process.env;
 
@@ -23,8 +22,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('*', (req, res, next) => {
-  next(new error_404('Страница не найдена'));
-});
+// app.use('*', (req, res, next) => {
+//   next(new error_404('Страница не найдена'));
+// });
 
 app.listen(PORT);

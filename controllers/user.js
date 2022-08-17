@@ -1,13 +1,6 @@
 const User = require('../models/user');
-const error_400 = require('../errors/error_400');
-const error_404 = require('../errors/error_404');
 
 module.exports.createUser = (req, res, next) => {
-  // const { email, password } = req.body;
-  // if (!email || !password) {
-  //   next(new error_400('Переданы некорректные данные при создании пользователя'));
-  // }
-
   User.create({
     name: req.body.name,
     about: req.body.about,
@@ -22,9 +15,10 @@ module.exports.createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new error_400('Переданы некорректные данные при создании пользователя'));
-      }
-      return next(err);
+        res.status(400).send({
+          message: 'Переданы некорректные данные при создании пользователя',
+        });
+      };
     });
 };
 
@@ -38,9 +32,11 @@ module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        return next(new error_404('Пользователь не найден'));
+        res.status(404).send({
+          message: 'Пользователь не найден',
+        });
       }
-      return res.status(200).send(user);
+      res.status(200).send(user);
     })
     .catch(next);
 };
@@ -55,9 +51,10 @@ module.exports.updateProfile = (req, res, next) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new error_400('Переданы некорректные данные при обновлении профиля'));
-      }
-      return next(err);
+        res.status(400).send({
+          message: 'Пользователь не найден',
+        });
+      };
     });
 };
 
@@ -71,8 +68,9 @@ module.exports.updateAvatar = (req, res, next) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new error_400('Переданы некорректные данные при обновлении аватара'));
-      }
-      return next(err);
+        res.status(400).send({
+          message: 'Переданы некорректные данные при обновлении аватара',
+        });
+      };
     });
 };

@@ -1,9 +1,7 @@
 const Card = require('../models/card');
-const error_400 = require('../errors/error_400');
-const error_404 = require('../errors/error_404');
 
 module.exports.createCard = (req, res, next) => {
-  
+  console.log(req.user._id);
   Card.create({
     name: req.body.name,
     link: req.body.link,
@@ -12,9 +10,10 @@ module.exports.createCard = (req, res, next) => {
     .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return next(new error_400('Переданы некорректные данные при создании карточки'));
-      }
-      return next(err);
+        res.status(400).send({
+          message: 'Переданы некорректные данные при создании карточки',
+        });
+      };
     });
 };
 
@@ -28,8 +27,10 @@ module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        return next(new error_404('Карточка с указанным _id не найдена.'));
-      }
+        res.status(404).send({
+          message: 'Карточка с указанным _id не найдена',
+        });
+      };
       Card.findByIdAndRemove(req.params.cardId)
         .then((deletedCard) => res.status(200).send(deletedCard))
         .catch(next);
@@ -45,9 +46,11 @@ module.exports.likeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        return next(new error_404('Карточка с указанным _id не найдена.'));
-      }
-      return res.status(200).send(card);
+        res.status(404).send({
+          message: 'Карточка с указанным _id не найдена',
+        });
+      };
+      res.status(200).send(card);
     })
     .catch(next);
 };
@@ -60,9 +63,11 @@ module.exports.unlikeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        return next(new error_404('Карточка с указанным _id не найдена.'));
-      }
-      return res.status(200).send(card);
+        res.status(404).send({
+          message: 'Карточка с указанным _id не найдена',
+        });
+      };
+      res.status(200).send(card);
     })
     .catch(next);
 };
