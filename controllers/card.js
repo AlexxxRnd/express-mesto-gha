@@ -1,7 +1,7 @@
 const Card = require('../models/card');
 const mongoose = require('mongoose');
 
-module.exports.createCard = (req, res, next) => {
+module.exports.createCard = (req, res) => {
   Card.create({
     name: req.body.name,
     link: req.body.link,
@@ -17,13 +17,12 @@ module.exports.createCard = (req, res, next) => {
     });
 };
 
-module.exports.getCards = (req, res, next) => {
+module.exports.getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.status(200).send(cards))
-    .catch(next);
 };
 
-module.exports.deleteCard = (req, res, next) => {
+module.exports.deleteCard = (req, res) => {
   if (mongoose.Types.ObjectId.isValid(req.params.cardId)) {
     Card.findById(req.params.cardId)
       .then((card) => {
@@ -34,9 +33,7 @@ module.exports.deleteCard = (req, res, next) => {
         };
         Card.findByIdAndRemove(req.params.cardId)
           .then((deletedCard) => res.status(200).send(deletedCard))
-          .catch(next);
       })
-      .catch(next);
   }
   else {
     res.status(400).send({
@@ -45,7 +42,7 @@ module.exports.deleteCard = (req, res, next) => {
   };
 };
 
-module.exports.likeCard = (req, res, next) => {
+module.exports.likeCard = (req, res) => {
   if (mongoose.Types.ObjectId.isValid(req.params.cardId)) {
     Card.findByIdAndUpdate(
       req.params.cardId,
@@ -60,7 +57,6 @@ module.exports.likeCard = (req, res, next) => {
         };
         res.status(200).send(card);
       })
-      .catch(next);
   }
   else {
     res.status(400).send({
@@ -70,7 +66,7 @@ module.exports.likeCard = (req, res, next) => {
 };
 
 
-module.exports.unlikeCard = (req, res, next) => {
+module.exports.unlikeCard = (req, res) => {
   if (mongoose.Types.ObjectId.isValid(req.params.cardId)) {
     Card.findByIdAndUpdate(
       req.params.cardId,
@@ -85,7 +81,6 @@ module.exports.unlikeCard = (req, res, next) => {
         };
         res.status(200).send(card);
       })
-      .catch(next);
   }
   else {
     res.status(400).send({

@@ -1,7 +1,7 @@
 const User = require('../models/user');
 const mongoose = require('mongoose');
 
-module.exports.createUser = (req, res, next) => {
+module.exports.createUser = (req, res) => {
   User.create({
     name: req.body.name,
     about: req.body.about,
@@ -23,13 +23,12 @@ module.exports.createUser = (req, res, next) => {
     });
 };
 
-module.exports.getUsers = (req, res, next) => {
+module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.status(200).send(users))
-    .catch(next);
 };
 
-module.exports.getUserById = (req, res, next) => {
+module.exports.getUserById = (req, res) => {
   if (mongoose.Types.ObjectId.isValid(req.params.userId)) {
     User.findById(req.params.userId)
       .then((user) => {
@@ -40,7 +39,6 @@ module.exports.getUserById = (req, res, next) => {
         }
         res.status(200).send(user);
       })
-      .catch(next);
   }
   else {
     res.status(400).send({
@@ -49,14 +47,14 @@ module.exports.getUserById = (req, res, next) => {
   };
 };
 
-module.exports.updateProfile = (req, res, next) => {
+module.exports.updateProfile = (req, res) => {
   User.findByIdAndUpdate(
     req.user._id,
     {
       name: req.body.name,
       about: req.body.about
     },
-    { runValidators: true }
+    { new: true, runValidators: true }
   )
     .then((user) => res.status(200).send({
       name: user.name,
@@ -71,10 +69,11 @@ module.exports.updateProfile = (req, res, next) => {
     });
 };
 
-module.exports.updateAvatar = (req, res, next) => {
+module.exports.updateAvatar = (req, res) => {
   User.findByIdAndUpdate(
     req.user._id,
     { avatar: req.body.avatar },
+    { new: true }
   )
     .then((user) => res.status(200).send({
       avatar: user.avatar,
