@@ -56,7 +56,7 @@ module.exports.updateProfile = (req, res, next) => {
       name: req.body.name,
       about: req.body.about
     },
-    { new: true },
+    { runValidators: true }
   )
     .then((user) => res.status(200).send(user))
     .catch((err) => {
@@ -72,7 +72,6 @@ module.exports.updateAvatar = (req, res, next) => {
   User.findByIdAndUpdate(
     req.user._id,
     { avatar: req.body.avatar },
-    { new: true },
   )
     .then((user) => res.status(200).send(user))
     .catch((err) => {
