@@ -1,11 +1,10 @@
 const Card = require('../models/card');
 
 module.exports.createCard = (req, res, next) => {
-  console.log(req.user._id);
   Card.create({
     name: req.body.name,
     link: req.body.link,
-    owner: req.user._id,
+    owner: '62f7b9a52cdcd454268cde10',
   })
     .then((card) => res.status(200).send(card))
     .catch((err) => {

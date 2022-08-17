@@ -29,6 +29,7 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 module.exports.getUserById = (req, res, next) => {
+  if (mongoose.Types.ObjectId.isValid(req.params.userId)) {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
@@ -39,6 +40,12 @@ module.exports.getUserById = (req, res, next) => {
       res.status(200).send(user);
     })
     .catch(next);
+}
+else {
+  res.status(400).send({
+    message: 'Пользователь по указанному _id не найден',
+  });
+};
 };
 
 module.exports.updateProfile = (req, res, next) => {
