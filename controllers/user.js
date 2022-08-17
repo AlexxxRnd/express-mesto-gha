@@ -3,10 +3,10 @@ const error_400 = require('../errors/error_400');
 const error_404 = require('../errors/error_404');
 
 module.exports.createUser = (req, res, next) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    next(new error_400('Переданы некорректные данные при создании пользователя'));
-  }
+  // const { email, password } = req.body;
+  // if (!email || !password) {
+  //   next(new error_400('Переданы некорректные данные при создании пользователя'));
+  // }
 
   User.create({
     name: req.body.name,
@@ -17,6 +17,8 @@ module.exports.createUser = (req, res, next) => {
       name: user.name,
       about: user.about,
       avatar: user.avatar,
+      _id: user._id,
+      email: user.email,
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
