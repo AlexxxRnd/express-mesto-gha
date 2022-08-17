@@ -6,11 +6,9 @@ module.exports.createCard = (req, res, next) => {
   Card.create({
     name: req.body.name,
     link: req.body.link,
+    owner: req.user._id,
   })
-    .then((card) => res.status(200).send({
-      name: card.name,
-      link: card.link,
-    }))
+    .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return next(new error_400('Переданы некорректные данные при создании карточки'));
@@ -31,7 +29,9 @@ module.exports.deleteCard = (req, res, next) => {
       if (!card) {
         return next(new error_404('Карточка с указанным _id не найдена.'));
       }
-      return res.status(200).send(card);
+      Card.findByIdAndRemove(req.params.cardId)
+        .then((deletedCard) => res.status(200).send(deletedCard))
+        .catch(next);
     })
     .catch(next);
 };
