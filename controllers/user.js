@@ -31,29 +31,31 @@ module.exports.getUsers = (req, res, next) => {
 
 module.exports.getUserById = (req, res, next) => {
   if (mongoose.Types.ObjectId.isValid(req.params.userId)) {
-  User.findById(req.params.userId)
-    .then((user) => {
-      if (!user) {
-        res.status(404).send({
-          message: 'Пользователь не найден',
-        });
-      }
-      res.status(200).send(user);
-    })
-    .catch(next);
-}
-else {
-  res.status(400).send({
-    message: 'Пользователь по указанному _id не найден',
-  });
-};
+    User.findById(req.params.userId)
+      .then((user) => {
+        if (!user) {
+          res.status(404).send({
+            message: 'Пользователь не найден',
+          });
+        }
+        res.status(200).send(user);
+      })
+      .catch(next);
+  }
+  else {
+    res.status(400).send({
+      message: 'Пользователь по указанному _id не найден',
+    });
+  };
 };
 
 module.exports.updateProfile = (req, res, next) => {
-  const { name, about } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
-    { name, about },
+    {
+      name: req.body.name,
+      about: req.body.about
+    },
     { new: true },
   )
     .then((user) => res.status(200).send(user))
@@ -67,10 +69,9 @@ module.exports.updateProfile = (req, res, next) => {
 };
 
 module.exports.updateAvatar = (req, res, next) => {
-  const { avatar } = req.body;
   User.findByIdAndUpdate(
     req.user._id,
-    { avatar },
+    { avatar: req.body.avatar },
     { new: true },
   )
     .then((user) => res.status(200).send(user))
