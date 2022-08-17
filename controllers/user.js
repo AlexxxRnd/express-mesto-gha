@@ -1,9 +1,12 @@
 const User = require('../models/user');
-const Error400 = require('../errors/error400');
-const Error404 = require('../errors/error404');
-const Error500 = require('../errors/error500');
 
-module.exports.createUser = (req, res, next) => {
+const HttpCodes = {
+  BAD_REQUEST: 400,
+  NOT_FOUND: 404,
+  INTERNAL_SERVER_ERROR: 500,
+};
+
+module.exports.createUser = (req, res) => {
   User.create({
     name: req.body.name,
     about: req.body.about,
@@ -18,37 +21,41 @@ module.exports.createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new Error400('Переданы некорректные данные при создании пользователя'));
+        res.status(HttpCodes.BAD_REQUEST).send({
+          message: 'Переданы некорректные данные при создании пользователя',
+        });
       } else {
-        next(new Error500('Произошла ошибка'));
+        res.status(HttpCodes.INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
       }
     });
 };
 
-module.exports.getUsers = (req, res, next) => {
+module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch(() => next(new Error500('Произошла ошибка')));
+    .catch(() => res.status(HttpCodes.INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' }));
 };
 
-module.exports.getUserById = (req, res, next) => {
+module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        next(new Error404('Пользователь не найден'));
+        res.status(HttpCodes.NOT_FOUND).send({
+          message: 'Пользователь не найден',
+        });
       }
       res.send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new Error400('Невалидный id '));
+        res.status(HttpCodes.BAD_REQUEST).send({ message: 'Невалидный id' });
       } else {
-        next(new Error500('Произошла ошибка'));
+        res.status(HttpCodes.INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
       }
     });
 };
 
-module.exports.updateProfile = (req, res, next) => {
+module.exports.updateProfile = (req, res) => {
   User.findByIdAndUpdate(
     req.user._id,
     {
@@ -63,14 +70,16 @@ module.exports.updateProfile = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new Error400('Переданы некорректные данные при обновлении информации'));
+        res.status(HttpCodes.BAD_REQUEST).send({
+          message: 'Переданы некорректные данные при обновлении информации',
+        });
       } else {
-        next(new Error500('Произошла ошибка'));
+        res.status(HttpCodes.INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
       }
     });
 };
 
-module.exports.updateAvatar = (req, res, next) => {
+module.exports.updateAvatar = (req, res) => {
   User.findByIdAndUpdate(
     req.user._id,
     { avatar: req.body.avatar },
@@ -81,9 +90,11 @@ module.exports.updateAvatar = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new Error400('Переданы некорректные данные при обновлении аватара'));
+        res.status(HttpCodes.BAD_REQUEST).send({
+          message: 'Переданы некорректные данные при обновлении аватара',
+        });
       } else {
-        next(new Error500('Произошла ошибка'));
+        res.status(HttpCodes.INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
       }
     });
 };
