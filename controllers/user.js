@@ -1,4 +1,6 @@
 const User = require('../models/user');
+const error_400 = require('../errors/error_400');
+const error_404 = require('../errors/error_404');
 
 module.exports.createUser = (req, res, next) => {
   User.create({
@@ -11,9 +13,12 @@ module.exports.createUser = (req, res, next) => {
       about: user.about,
       avatar: user.avatar,
     }))
-  // .catch((err) => {
-  //   return next(err);
-  // });
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new error_400('Переданы некорректные данные при создании пользователя'));
+      }
+      return next(err);
+    });
 };
 
 module.exports.getUsers = (req, res, next) => {
@@ -26,7 +31,7 @@ module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        return next(console.log('Пользователь не найден'));
+        return next(error_404('Пользователь не найден'));
       }
       return res.status(200).send(user);
     })
@@ -38,12 +43,12 @@ module.exports.updateProfile = (req, res, next) => {
   User.findByIdAndUpdate(
     req.user._id,
     { name, about },
-    { new: true, runValidators: true },
+    { new: true },
   )
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Неверный тип данных.'));
+        next(new error_400('Переданы некорректные данные при обновлении профиля'));
       }
       return next(err);
     });
@@ -54,12 +59,12 @@ module.exports.updateAvatar = (req, res, next) => {
   User.findByIdAndUpdate(
     req.user._id,
     { avatar },
-    { new: true, runValidators: true },
+    { new: true },
   )
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Неверная ссылка'));
+        next(new error_400('Переданы некорректные данные при обновлении аватара'));
       }
       return next(err);
     });

@@ -1,4 +1,6 @@
 const Card = require('../models/card');
+const error_400 = require('../errors/error_400');
+const error_404 = require('../errors/error_404');
 
 module.exports.createCard = (req, res, next) => {
   Card.create({
@@ -9,9 +11,12 @@ module.exports.createCard = (req, res, next) => {
       name: card.name,
       link: card.link,
     }))
-  // .catch((err) => {
-  //   return next(err);
-  // });
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return next(new error_400('Переданы некорректные данные при создании карточки'));
+      }
+      return next(err);
+    });
 };
 
 module.exports.getCards = (req, res, next) => {
@@ -24,7 +29,7 @@ module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        return next(console.log('Карточка не найдена'));
+        return next(new error_404('Карточка с указанным _id не найдена.'));
       }
       return res.status(200).send(card);
     })
@@ -39,7 +44,7 @@ module.exports.likeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        return next(console.log('Карточка не найдена'));
+        return next(new error_404('Карточка с указанным _id не найдена.'));
       }
       return res.status(200).send(card);
     })
@@ -54,7 +59,7 @@ module.exports.unlikeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        return next(console.log('Карточка не найдена'));
+        return next(new error_404('Карточка с указанным _id не найдена.'));
       }
       return res.status(200).send(card);
     })
