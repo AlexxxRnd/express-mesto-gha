@@ -14,14 +14,16 @@ app.use(express.json());
 
 app.use((req, res, next) => {
   req.user = {
-    _id: '62f7b9a52cdcd454268cde10'
+    _id: '62f7b9a52cdcd454268cde10',
   };
   next();
 });
 
 app.use('/', require('./routes/user'));
+
 app.use('/', require('./routes/card'));
-app.use('*', (req, res, next) => {
+
+app.use('*', (req, res) => {
   res.status(404).send({
     message: 'Страница не найдена',
   });
