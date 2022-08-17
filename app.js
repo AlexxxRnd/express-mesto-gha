@@ -15,7 +15,7 @@ app.use('/', require('./routes/user'));
 
 app.use((req, res, next) => {
   req.user = {
-    //_id: '62f7b9a52cdcd454268cde10'
+    _id: '62f7b9a52cdcd454268cde10'
   };
 
   next();
