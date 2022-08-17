@@ -3,6 +3,11 @@ const error_400 = require('../errors/error_400');
 const error_404 = require('../errors/error_404');
 
 module.exports.createUser = (req, res, next) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    next(new error_400('Переданы некорректные данные при создании пользователя'));
+  }
+
   User.create({
     name: req.body.name,
     about: req.body.about,
