@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const Card = require('../models/card');
 
 module.exports.createCard = (req, res) => {
@@ -32,15 +31,15 @@ module.exports.deleteCard = (req, res) => {
         res.status(404).send({
           message: 'Карточка с указанным _id не найдена',
         });
-      };
+      }
       Card.findByIdAndRemove(req.params.cardId)
-        .then((deletedCard) => res.send(deletedCard))
+        .then((deletedCard) => res.send(deletedCard));
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Невалидный id ' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' })
+        res.status(500).send({ message: 'Произошла ошибка' });
       }
     });
 };
@@ -56,14 +55,14 @@ module.exports.likeCard = (req, res) => {
         res.status(404).send({
           message: 'Карточка с указанным _id не найдена',
         });
-      };
+      }
       res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Невалидный id ' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' })
+        res.status(500).send({ message: 'Произошла ошибка' });
       }
     });
 };
@@ -86,7 +85,7 @@ module.exports.unlikeCard = (req, res) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Невалидный id ' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' })
+        res.status(500).send({ message: 'Произошла ошибка' });
       }
     });
 };

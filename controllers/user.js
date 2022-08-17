@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const User = require('../models/user');
 
 module.exports.createUser = (req, res) => {
@@ -45,7 +44,7 @@ module.exports.getUserById = (req, res) => {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Невалидный id ' });
       } else {
-        res.status(500).send({ message: 'Произошла ошибка' })
+        res.status(500).send({ message: 'Произошла ошибка' });
       }
     });
 };
@@ -55,9 +54,9 @@ module.exports.updateProfile = (req, res) => {
     req.user._id,
     {
       name: req.body.name,
-      about: req.body.about
+      about: req.body.about,
     },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   )
     .then((user) => res.send({
       name: user.name,
@@ -78,7 +77,7 @@ module.exports.updateAvatar = (req, res) => {
   User.findByIdAndUpdate(
     req.user._id,
     { avatar: req.body.avatar },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   )
     .then((user) => res.send({
       avatar: user.avatar,
