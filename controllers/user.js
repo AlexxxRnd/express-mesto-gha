@@ -38,7 +38,7 @@ module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        return next(error_404('Пользователь не найден'));
+        return next(new error_404('Пользователь не найден'));
       }
       return res.status(200).send(user);
     })
