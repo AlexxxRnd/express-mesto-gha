@@ -11,13 +11,12 @@ module.exports.createUser = (req, res) => {
     name: req.body.name,
     about: req.body.about,
     avatar: req.body.avatar,
-  }, { runValidators: true })
-    .then((user) => res.send({
+  })
+    .then((user) => res.status(200).send({
       name: user.name,
       about: user.about,
       avatar: user.avatar,
       _id: user._id,
-      email: user.email,
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
