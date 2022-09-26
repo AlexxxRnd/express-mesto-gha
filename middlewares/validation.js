@@ -18,14 +18,61 @@ const signUp = celebrate({
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().custom((value) => {
       if (!validator.isURL(value, { require_protocol: true })) {
-        throw new BadRequestError('Неправильный формат URL адреса');
+        throw new BadRequestError('Неверный URL адрес');
       }
       return value;
     }),
   }),
 });
 
+const userValidation = celebrate({
+  params: Joi.object().keys({
+    userId: Joi.string().required().length(24).hex(),
+  }),
+});
+
+const updateUserInfoValidation = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(2).max(30),
+    about: Joi.string().required().min(2).max(30),
+  }),
+});
+
+const updateUserAvatarValidation = celebrate({
+  body: Joi.object().keys({
+    avatar: Joi.string().custom((value) => {
+      if (!validator.isURL(value, { require_protocol: true })) {
+        throw new BadRequestError('Неверный URL адрес');
+      }
+      return value;
+    }),
+  }),
+});
+
+const createCardValidation = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(2).max(30),
+    link: Joi.string().custom((value) => {
+      if (!validator.isURL(value, { require_protocol: true })) {
+        throw new BadRequestError('Неверный URL адрес');
+      }
+      return value;
+    }),
+  }),
+});
+
+const cardValidation = celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().required().length(24).hex(),
+  }),
+});
+
 module.exports = {
   signUp,
   signIn,
+  userValidation,
+  updateUserInfoValidation,
+  updateUserAvatarValidation,
+  createCardValidation,
+  cardValidation,
 };

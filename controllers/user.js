@@ -4,6 +4,7 @@ const User = require('../models/user');
 
 const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
+const ConflictError = require('../errors/ConflictError');
 
 module.exports.createUser = (req, res, next) => {
   bcrypt.hash(req.body.password, 10)
@@ -26,7 +27,7 @@ module.exports.createUser = (req, res, next) => {
         next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
       }
       if (err.code === 11000) {
-        next(new BadRequestError('Данный email уже используется'));
+        next(new ConflictError('Данный email уже используется'));
       }
       return next(err);
     });
@@ -50,6 +51,16 @@ module.exports.login = (req, res, next) => {
     .catch(next);
 };
 
+module.exports.getCurrentUser = (req, res, next) => {
+  const { _id } = req.user;
+  User.findById(_id).then((user) => {
+    if (!user) {
+      return next(new NotFoundError('Пользователь не найден.'));
+    }
+    return res.status(200).send(user);
+  }).catch(next);
+};
+
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
@@ -60,7 +71,7 @@ module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        return next(new NotFoundError('Пользователь не найден'));
+        return next(new BadRequestError('Пользователь не найден'));
       }
       return res.send(user);
     })
