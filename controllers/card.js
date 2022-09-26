@@ -28,7 +28,7 @@ module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
     .then((card) => {
       if (!card) {
-        throw new BadRequestError('Карточка с указанным _id не найдена');
+        throw new ForbiddenError('Карточка с указанным _id не найдена');
       }
       if (card.owner.valueOf() !== _id) {
         throw new ForbiddenError('Нельзя удалить чужую карточку!');
@@ -48,7 +48,7 @@ module.exports.likeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        return next(new BadRequestError('Карточка с указанным _id не найдена'));
+        return next(new ForbiddenError('Карточка с указанным _id не найдена'));
       }
       return res.send(card);
     })
@@ -63,7 +63,7 @@ module.exports.unlikeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        return next(new BadRequestError('Карточка с указанным _id не найдена'));
+        return next(new ForbiddenError('Карточка с указанным _id не найдена'));
       }
       return res.send(card);
     })
