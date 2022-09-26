@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const auth = require('./middlewares/auth');
+const errorHandler = require('./middlewares/errorHandler');
 
 const {
   createUser,
@@ -37,5 +38,7 @@ app.use('*', (req, res) => {
     message: 'Страница не найдена',
   });
 });
+
+app.use(errorHandler);
 
 app.listen(PORT);

@@ -2,12 +2,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
-const HttpCodes = {
-  BAD_REQUEST: 400,
-  Unauthorized: 401,
-  NOT_FOUND: 404,
-  INTERNAL_SERVER_ERROR: 500,
-};
+const BadRequestError = require('../errors/BadRequestError');
+const NotFoundError = require('../errors/NotFoundError');
+const UnauthorizedError = require('../errors/UnauthorizedError');
 
 module.exports.createUser = (req, res) => {
   bcrypt.hash(req.body.password, 10)
@@ -27,11 +24,7 @@ module.exports.createUser = (req, res) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(HttpCodes.BAD_REQUEST).send({
-          message: 'Переданы некорректные данные при создании пользователя',
-        });
-      } else {
-        res.status(HttpCodes.INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+        throw new BadRequestError('Переданы некорректные данные при создании пользователя');
       }
     });
 };
@@ -50,36 +43,28 @@ module.exports.login = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(HttpCodes.Unauthorized).send({
-          message: 'Переданы некорректные данные при авторизации',
-        });
-      } else {
-        res.status(HttpCodes.INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+        throw new UnauthorizedError('Переданы некорректные данные при авторизации');
       }
     });
 };
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch(() => res.status(HttpCodes.INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' }));
+    .catch(next);
 };
 
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        res.status(HttpCodes.NOT_FOUND).send({
-          message: 'Пользователь не найден',
-        });
+        throw new NotFoundError('Пользователь не найден');
       }
       res.send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(HttpCodes.BAD_REQUEST).send({ message: 'Невалидный id' });
-      } else {
-        res.status(HttpCodes.INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+        throw new BadRequestError('Невалидный id');
       }
     });
 };
@@ -99,11 +84,7 @@ module.exports.updateProfile = (req, res) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(HttpCodes.BAD_REQUEST).send({
-          message: 'Переданы некорректные данные при обновлении информации',
-        });
-      } else {
-        res.status(HttpCodes.INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+        throw new BadRequestError('Переданы некорректные данные при обновлении информации');
       }
     });
 };
@@ -119,11 +100,7 @@ module.exports.updateAvatar = (req, res) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(HttpCodes.BAD_REQUEST).send({
-          message: 'Переданы некорректные данные при обновлении аватара',
-        });
-      } else {
-        res.status(HttpCodes.INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+        throw new BadRequestError('Переданы некорректные данные при обновлении аватара');
       }
     });
 };
