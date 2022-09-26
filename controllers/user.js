@@ -6,7 +6,7 @@ const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   bcrypt.hash(req.body.password, 10)
     .then((hash) => User.create({
       name: req.body.name,
@@ -24,22 +24,26 @@ module.exports.createUser = (req, res) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные при создании пользователя');
+        next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
       }
+      return next(err);
     });
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
+      if (!user || !password) {
+        return next(new BadRequestError('Неверный email или пароль'));
+      }
       const token = jwt.sign(
         { _id: user._id },
         'some-secret-key',
         { expiresIn: '7d' },
       );
-      res.send({ token });
+      return res.send({ token });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -54,22 +58,18 @@ module.exports.getUsers = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.getUserById = (req, res) => {
+module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь не найден');
+        return next(new NotFoundError('Пользователь не найден'));
       }
-      res.send(user);
+      return res.send(user);
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        throw new BadRequestError('Невалидный id');
-      }
-    });
+    .catch(next);
 };
 
-module.exports.updateProfile = (req, res) => {
+module.exports.updateProfile = (req, res, next) => {
   User.findByIdAndUpdate(
     req.user._id,
     {
@@ -84,12 +84,13 @@ module.exports.updateProfile = (req, res) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные при обновлении информации');
+        return next(new BadRequestError('Переданы некорректные данные при обновлении информации'));
       }
+      return next(err);
     });
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   User.findByIdAndUpdate(
     req.user._id,
     { avatar: req.body.avatar },
@@ -100,7 +101,8 @@ module.exports.updateAvatar = (req, res) => {
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные при обновлении аватара');
+        next(new BadRequestError('Переданы некорректные данные при обновлении аватара'));
       }
+      return next(err);
     });
 };

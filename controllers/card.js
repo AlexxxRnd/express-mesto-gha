@@ -3,7 +3,7 @@ const BadRequestError = require('../errors/BadRequestError');
 const NotFoundError = require('../errors/NotFoundError');
 const ForbiddenError = require('../errors/ForbiddenError');
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   Card.create({
     name: req.body.name,
     link: req.body.link,
@@ -12,8 +12,9 @@ module.exports.createCard = (req, res) => {
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('Переданы некорректные данные при создании карточки');
+        return next(new BadRequestError('Переданы некорректные данные при создании карточки'));
       }
+      return next(err);
     });
 };
 
@@ -23,7 +24,7 @@ module.exports.getCards = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.deleteCard = (req, res) => {
+module.exports.deleteCard = (req, res, next) => {
   const { _id } = req.user;
   Card.findById(req.params.cardId)
     .then((card) => {
@@ -34,14 +35,13 @@ module.exports.deleteCard = (req, res) => {
         throw new ForbiddenError('Нельзя удалить чужую карточку!');
       }
       Card.findByIdAndRemove(req.params.cardId)
-        .then((deletedCard) => res.send(deletedCard));
+        .then((deletedCard) => res.send(deletedCard))
+        .catch(next);
     })
-    .catch(() => {
-      throw new BadRequestError('Невалидный id ');
-    });
+    .catch(next);
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -49,18 +49,14 @@ module.exports.likeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Карточка с указанным _id не найдена');
+        return next(new NotFoundError('Карточка с указанным _id не найдена'));
       }
-      res.send(card);
+      return res.send(card);
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        throw new BadRequestError('Невалидный id');
-      }
-    });
+    .catch(next);
 };
 
-module.exports.unlikeCard = (req, res) => {
+module.exports.unlikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -68,13 +64,9 @@ module.exports.unlikeCard = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Карточка с указанным _id не найдена');
+        return next(new NotFoundError('Карточка с указанным _id не найдена'));
       }
-      res.send(card);
+      return res.send(card);
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        throw new BadRequestError('Невалидный id');
-      }
-    });
+    .catch(next);
 };
