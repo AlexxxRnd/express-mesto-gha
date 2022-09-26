@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const { errors } = require('celebrate');
 const auth = require('./middlewares/auth');
 const errorHandler = require('./middlewares/errorHandler');
+const NotFoundError = require('./errors/NotFoundError');
 
 const {
   signIn,
@@ -39,10 +40,8 @@ app.post('/cards', auth, createCard);
 app.use('/', require('./routes/user'));
 app.use('/', require('./routes/card'));
 
-app.use('*', (req, res) => {
-  res.status(404).send({
-    message: 'Страница не найдена',
-  });
+app.use('*', (req, res, next) => {
+  next(new NotFoundError('Страница не найдена'));
 });
 
 app.use(errors());
