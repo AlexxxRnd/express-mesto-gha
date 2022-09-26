@@ -26,6 +26,9 @@ module.exports.createUser = (req, res, next) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
       }
+      if (err.code === 11000) {
+        next(new BadRequestError('Данный email уже используется'));
+      }
       return next(err);
     });
 };
@@ -45,11 +48,7 @@ module.exports.login = (req, res, next) => {
       );
       return res.send({ token });
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        throw new UnauthorizedError('Переданы некорректные данные при авторизации');
-      }
-    });
+    .catch(next);
 };
 
 module.exports.getUsers = (req, res, next) => {

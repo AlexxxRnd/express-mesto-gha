@@ -3,7 +3,6 @@ const errorHandler = (err, req, res, next) => {
   const message = err.message || 'На сервере произошла ошибка.';
 
   res.status(status).send({
-    err,
     message,
   });
   next();
