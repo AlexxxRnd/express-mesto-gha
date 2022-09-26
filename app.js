@@ -4,6 +4,11 @@ const auth = require('./middlewares/auth');
 const errorHandler = require('./middlewares/errorHandler');
 
 const {
+  signIn,
+  signUp,
+} = require('./middlewares/validation');
+
+const {
   createUser,
   login,
 } = require('./controllers/user');
@@ -23,8 +28,8 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 
 app.use(express.json());
 
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signin', signIn, login);
+app.post('/signup', signUp, createUser);
 
 app.use(auth);
 
