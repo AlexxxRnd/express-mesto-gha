@@ -1,6 +1,7 @@
 const Card = require('../models/card');
 
 const NotFoundError = require('../errors/NotFoundError');
+const ForbiddenError = require('../errors/ForbiddenError');
 
 module.exports.createCard = (req, res, next) => {
   Card.create({
@@ -26,7 +27,7 @@ module.exports.deleteCard = (req, res, next) => {
         throw new NotFoundError('Карточка с указанным _id не найдена');
       }
       if (card.owner.valueOf() !== _id) {
-        throw new NotFoundError('Нельзя удалить чужую карточку!');
+        throw new ForbiddenError('Нельзя удалить чужую карточку!');
       }
       Card.findByIdAndRemove(req.params.cardId)
         .then((deletedCard) => res.send(deletedCard))
