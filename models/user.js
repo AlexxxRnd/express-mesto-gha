@@ -19,8 +19,7 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     validate: {
-      // eslint-disable-next-line no-useless-escape
-      validator: (v) => /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?$/.test(v),
+      validator: (v) => /[-a-zA-Z0-9@:%_\\+.~#?&\\/=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\\+.~#?&\\/=]*)?/gi.test(v),
       throw: BadRequestError('Неверный URL адрес'),
     },
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
