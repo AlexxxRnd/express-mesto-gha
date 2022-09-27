@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const UnauthorizedError = require('../errors/UnauthorizedError');
-const BadRequestError = require('../errors/BadRequestError');
+// const BadRequestError = require('../errors/BadRequestError');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -19,8 +19,10 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     validate: {
-      validator: (v) => /[-a-zA-Z0-9@:%_\\+.~#?&\\/=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\\+.~#?&\\/=]*)?/gi.test(v),
-      throw: BadRequestError('Неверный URL адрес'),
+      validator(v) {
+        // eslint-disable-next-line no-useless-escape
+        return /[-a-zA-Z0-9@:%_\+.~#?&\/=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&\/=]*)?/.test(v);
+      },
     },
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
   },
