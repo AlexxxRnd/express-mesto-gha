@@ -1,7 +1,6 @@
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const UnauthorizedError = require('../errors/UnauthorizedError');
-const BadRequestError = require('../errors/BadRequestError');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -22,7 +21,7 @@ const userSchema = new mongoose.Schema({
       validator(v) {
         return /^https?:\/\/(www\.)?[a-zA-Z0-9\-.]{1,}\.[a-zA-Z]{1,4}[a-zA-Z0-9\-._~:/?#[\]@!$&'()*+,;=]{1,}/.test(v);
       },
-      throw: BadRequestError('Неверный url'),
+      message: (props) => `${props.value} не является URL`,
     },
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
   },
