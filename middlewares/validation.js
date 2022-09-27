@@ -17,7 +17,7 @@ const signUp = celebrate({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().custom((value) => {
-      if (!validator.isURL(value, { require_protocol: true })) {
+      if (!validator.validator(value, { require_protocol: true })) {
         throw new BadRequestError('Неверный URL адрес');
       }
       return value;
