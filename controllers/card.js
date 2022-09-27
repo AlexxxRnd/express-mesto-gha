@@ -2,7 +2,7 @@ const Card = require('../models/card');
 
 const NotFoundError = require('../errors/NotFoundError');
 const ForbiddenError = require('../errors/ForbiddenError');
-// const BadRequestError = require('../errors/BadRequestError');
+const BadRequestError = require('../errors/BadRequestError');
 
 module.exports.createCard = (req, res, next) => {
   Card.create({
@@ -11,12 +11,12 @@ module.exports.createCard = (req, res, next) => {
     owner: req.user._id,
   })
     .then((card) => res.status(200).send(card))
-    .catch((err) =>
-      // if (err.name === 'ValidationError') {
-      //   next(new BadRequestError('Переданы некорректные данные при создании карточки'));
-      // }
-      // eslint-disable-next-line implicit-arrow-linebreak
-      next(err));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return next(new BadRequestError('Переданы некорректные данные при создании карточки'));
+      }
+      return next(err);
+    });
 };
 
 module.exports.getCards = (req, res, next) => {
