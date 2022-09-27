@@ -14,10 +14,6 @@ const {
   login,
 } = require('./controllers/user');
 
-const {
-  createCard,
-} = require('./controllers/card');
-
 const { PORT = 3000 } = process.env;
 
 const app = express();
@@ -33,8 +29,6 @@ app.post('/signin', signIn, login);
 app.post('/signup', signUp, createUser);
 
 app.use(auth);
-
-app.post('/cards', auth, createCard);
 
 app.use('/', require('./routes/user'));
 app.use('/', require('./routes/card'));
