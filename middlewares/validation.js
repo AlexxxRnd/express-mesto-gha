@@ -16,8 +16,7 @@ const signUp = celebrate({
     password: Joi.string().required().min(8).max(30),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    // eslint-disable-next-line prefer-regex-literals, no-useless-escape, no-invalid-regexp
-    avatar: Joi.string().pattern(new RegExp('/^https?:\/\/(www\.)?[a-zA-Z0-9\-.]{1,}\.[a-zA-Z]{1,4}[a-zA-Z0-9\-._~:/?#[\]@!$&()*+,;=]{1,}/')),
+    avatar: Joi.string().pattern(/\/^https?:\/\/(www\.)?[a-zA-Z0-9\-.]{1,}\.[a-zA-Z]{1,4}[a-zA-Z0-9\-._~:\\/?#[\]@!$&()*+,;=]{1,}\//),
   }),
 });
 
