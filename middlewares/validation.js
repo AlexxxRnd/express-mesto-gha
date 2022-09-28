@@ -16,7 +16,12 @@ const signUp = celebrate({
     password: Joi.string().required().min(8).max(30),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(/\/^https?:\/\/(www\.)?[a-zA-Z0-9\-.]{1,}\.[a-zA-Z]{1,4}[a-zA-Z0-9\-._~:\\/?#[\]@!$&()*+,;=]{1,}\//),
+    avatar: Joi.string().custom((value) => {
+      if (!validator.isURL(value)) {
+        throw new BadRequestError('Неверный URL адрес');
+      }
+      return value;
+    }),
   }),
 });
 
@@ -36,7 +41,7 @@ const updateUserInfoValidation = celebrate({
 const updateUserAvatarValidation = celebrate({
   body: Joi.object().keys({
     avatar: Joi.string().custom((value) => {
-      if (!validator.isURL(value, { require_protocol: true })) {
+      if (!validator.isURL(value)) {
         throw new BadRequestError('Неверный URL адрес');
       }
       return value;
@@ -48,7 +53,7 @@ const createCardValidation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     link: Joi.string().required().custom((value) => {
-      if (!validator.isURL(value, { require_protocol: true })) {
+      if (!validator.isURL(value)) {
         throw new BadRequestError('Неверный URL адрес');
       }
       return value;
