@@ -1,5 +1,5 @@
+const mongoose = require('mongoose');
 const Card = require('../models/card');
-
 const NotFoundError = require('../errors/NotFoundError');
 const ForbiddenError = require('../errors/ForbiddenError');
 const BadRequestError = require('../errors/BadRequestError');
@@ -29,6 +29,9 @@ module.exports.deleteCard = (req, res, next) => {
   const { _id } = req.user;
   Card.findById(req.params.cardId)
     .then((card) => {
+      if (!mongoose.Types.ObjectId.isValid(req.params.cardId)) {
+        throw new BadRequestError('Переданы некорректные данные');
+      }
       if (!card) {
         throw new NotFoundError('Карточка с указанным _id не найдена');
       }
@@ -49,6 +52,9 @@ module.exports.likeCard = (req, res, next) => {
     { new: true },
   )
     .then((card) => {
+      if (!mongoose.Types.ObjectId.isValid(req.params.cardId)) {
+        return next(new BadRequestError('Переданы некорректные данные'));
+      }
       if (!card) {
         return next(new NotFoundError('Карточка с указанным _id не найдена'));
       }
@@ -64,6 +70,9 @@ module.exports.unlikeCard = (req, res, next) => {
     { new: true },
   )
     .then((card) => {
+      if (!mongoose.Types.ObjectId.isValid(req.params.cardId)) {
+        return next(new BadRequestError('Переданы некорректные данные'));
+      }
       if (!card) {
         return next(new NotFoundError('Карточка с указанным _id не найдена'));
       }

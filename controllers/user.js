@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
@@ -71,6 +72,9 @@ module.exports.getUsers = (req, res, next) => {
 module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
+      if (!mongoose.Types.ObjectId.isValid(req.params.userId)) {
+        return next(new BadRequestError('Переданы некорректные данные'));
+      }
       if (!user) {
         return next(new NotFoundError('Пользователь не найден'));
       }
@@ -93,6 +97,9 @@ module.exports.updateProfile = (req, res, next) => {
       about: user.about,
     }))
     .catch((err) => {
+      if (!mongoose.Types.ObjectId.isValid(req.params.userId)) {
+        return next(new BadRequestError('Переданы некорректные данные'));
+      }
       if (err.name === 'ValidationError') {
         return next(new BadRequestError('Переданы некорректные данные при обновлении информации'));
       }
