@@ -40,8 +40,9 @@ module.exports.deleteCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные');
+        return next(new BadRequestError('Переданы некорректные данные'));
       }
+      return next(err);
     });
 };
 
@@ -59,8 +60,9 @@ module.exports.likeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные');
+        return next(new BadRequestError('Переданы некорректные данные'));
       }
+      return next(err);
     });
 };
 
@@ -78,7 +80,8 @@ module.exports.unlikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные');
+        return next(new BadRequestError('Переданы некорректные данные'));
       }
+      return next(err);
     });
 };
