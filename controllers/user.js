@@ -23,18 +23,14 @@ module.exports.createUser = (req, res, next) => {
       email: user.email,
       _id: user._id,
     }))
-    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
-      } else {
-        next(err);
+        return next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
       }
       if (err.code === 11000) {
-        next(new ConflictError('Данный email уже используется'));
-      } else {
-        next(err);
+        return next(new ConflictError('Данный email уже используется'));
       }
+      return next(err);
     });
 };
 
