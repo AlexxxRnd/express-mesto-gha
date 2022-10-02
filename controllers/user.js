@@ -117,6 +117,9 @@ module.exports.updateAvatar = (req, res, next) => {
       avatar: user.avatar,
     }))
     .catch((err) => {
+      if (!mongoose.Types.ObjectId.isValid(req.params.userId)) {
+        return next(new BadRequestError('Переданы некорректные данные'));
+      }
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при обновлении аватара'));
       }
